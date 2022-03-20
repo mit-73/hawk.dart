@@ -1,8 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:stack_trace/stack_trace.dart';
 
-import 'hawk_event.dart' show Backtrace;
-import 'platform/consts.dart';
+import 'hawk_event.dart' show Backtrace, SourceCode;
 
 /// converts [StackTrace] to [Backtrace]
 class StackTraceFactory {
@@ -18,7 +17,7 @@ class StackTraceFactory {
     final List<Backtrace> frames = <Backtrace>[];
     bool symbolicated = true;
 
-    for (int t = 0; t < chain.traces.length; t++) {
+    for (int t = 0; t < chain.traces.length; t += 1) {
       final Trace trace = chain.traces[t];
 
       for (final Frame frame in trace.frames) {
@@ -41,7 +40,7 @@ class StackTraceFactory {
       }
     }
 
-    return frames.reversed.toList();
+    return frames.toList();
   }
 
   /// converts [Frame] to [Backtrace]
@@ -50,16 +49,16 @@ class StackTraceFactory {
     Frame frame, {
     bool symbolicated = true,
   }) {
-    final String? function = frame.member;
-
     Backtrace? backtrace;
 
     if (symbolicated) {
-      final String file = '$eventOrigin${_absolutePathForCrashReport(frame)}';
+      final String file = frame.library;
+      final String? function = frame.member;
 
       backtrace = Backtrace(
         file: file,
         function: function,
+        arguments: 'test',
       );
 
       if (frame.line != null && frame.line! >= 0) {
@@ -72,23 +71,5 @@ class StackTraceFactory {
     }
 
     return backtrace;
-  }
-
-  /// A stack frame's code path may be one of "file:", "dart:" and "package:".
-  ///
-  /// Absolute file paths may contain personally identifiable information, and
-  /// therefore are stripped to only send the base file name. For example,
-  /// "/foo/bar/baz.dart" is reported as "baz.dart".
-  ///
-  /// "dart:" and "package:" imports are always relative and are OK to send in
-  /// full.
-  String _absolutePathForCrashReport(Frame frame) {
-    if (frame.uri.scheme != 'dart' &&
-        frame.uri.scheme != 'package' &&
-        frame.uri.pathSegments.isNotEmpty) {
-      return frame.uri.pathSegments.last;
-    }
-
-    return '${frame.uri}';
   }
 }

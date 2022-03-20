@@ -1,6 +1,7 @@
 import 'addons/addon.dart';
 import 'addons/custom_addon.dart';
 import 'addons/custom_addon_wrapper.dart';
+import 'addons/error_addon.dart';
 import 'configurations/configurations.dart';
 import 'hawk_event.dart';
 import 'logger.dart';
@@ -9,6 +10,7 @@ import 'provider/hawk_setting_provider.dart';
 import 'provider/user_provider.dart';
 import 'stack_trace_factory.dart';
 import 'throwable.dart';
+import 'version.dart';
 
 class EventHandler {
   const EventHandler({
@@ -25,8 +27,6 @@ class EventHandler {
   final IHawkSettingProvider _settingProvider;
   final IUserProvider _userProvider;
   final ILogger _logger;
-
-  static const PlatformChecker platformChecker = PlatformChecker();
 
   Map<String, dynamic> formingJsonExceptionInfo({
     required Throwable throwable,
@@ -79,21 +79,27 @@ class EventHandler {
           )
         : null;
 
-    final String description = '''
-OS: ${platformChecker.platform.operatingSystem}
-OS Version: ${platformChecker.platform.operatingSystemVersion}
-Hostname: ${platformChecker.platform.localHostname}
-Compile mode: ${platformChecker.compileMode}
-Has native integration: ${platformChecker.hasNativeIntegration}
-''';
+    final Map<String, dynamic> addons = <String, dynamic>{
+      ...ErrorAddon(throwable.error).fillJsonObject(<String, dynamic>{}),
+    };
+    for (final IAddon v in defaultAddons) {
+      addons.addAll(v.fillJsonObject(addons));
+    }
+
+    final Map<String, dynamic> context = <String, dynamic>{};
+    for (final IAddon v in customAddons) {
+      context.addAll(v.fillJsonObject(context));
+    }
 
     return Payload(
       title: title,
-      description: description,
       type: type,
       backtrace: backtrace,
       release: release,
       user: user,
+      addons: addons,
+      context: context,
+      catcherVersion: sdkVersion,
     );
   }
 }

@@ -10,7 +10,7 @@ class CustomAddonWrapper implements IAddon {
   final ICustomAddon customAddon;
 
   @override
-  void fillJsonObject(Map<String, dynamic> json) {
-    json[customAddon.name] = customAddon.provideData();
+  Map<String, dynamic> fillJsonObject(Map<String, dynamic> json) {
+    return json..[customAddon.name] = customAddon.provideData();
   }
 }

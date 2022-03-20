@@ -47,6 +47,7 @@ class Payload {
     this.release,
     this.user,
     this.context,
+    this.catcherVersion,
   });
 
   factory Payload.fromJson(Map<String, dynamic> json) {
@@ -80,6 +81,7 @@ class Payload {
       release: json['release'] as String?,
       user: user,
       context: context,
+      catcherVersion: json['catcherVersion'] as String?,
     );
   }
 
@@ -92,6 +94,7 @@ class Payload {
   final String? release;
   final HawkUser? user;
   final Map<String, dynamic>? context;
+  final String? catcherVersion;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         'title': title,
@@ -106,6 +109,7 @@ class Payload {
         'release': release,
         'user': user?.toJson(),
         'context': context,
+        'catcherVersion': catcherVersion,
       };
 
   Payload copyWith({

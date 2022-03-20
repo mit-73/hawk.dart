@@ -3,5 +3,5 @@ abstract class IAddon {
   const IAddon();
 
   ///  Apply data to json event
-  void fillJsonObject(Map<String, dynamic> json);
+  Map<String, dynamic> fillJsonObject(Map<String, dynamic> json);
 }

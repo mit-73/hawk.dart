@@ -1,5 +1,7 @@
 import 'platform.dart';
 
+const PlatformChecker platformChecker = PlatformChecker();
+
 /// Helper to check in which enviroment the library is running.
 /// The envirment checks (release/debug/profile) are mutually exclusive.
 class PlatformChecker {

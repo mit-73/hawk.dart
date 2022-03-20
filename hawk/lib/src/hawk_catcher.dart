@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'addons/addon.dart';
 import 'addons/custom_addon.dart';
+import 'addons/platform_addon.dart';
 import 'base_logger.dart';
 import 'configurations/configurations.dart';
 import 'configurations/hawk_configurations.dart';
@@ -40,6 +42,9 @@ class HawkOptions {
         token: token,
         tokenParser: tokenParser,
         logger: logger,
+        defaultAddons: <IAddon>[
+          const PlatformAddon(),
+        ],
       ),
       userProvider: userProvider,
     );
